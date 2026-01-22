@@ -14,19 +14,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchData = async () => {
-      let data = {};
-
-      if (process.env.NODE_ENV === "development") {
-        data = (await import("../localData/job_stats.json")).default;
-      } else {
-        const response = await fetch(
-          "https://raw.githubusercontent.com/gitsofaryan/urunc-ci-dashboard" +
-            "/refs/heads/latest-dashboard-data/data/job_stats.json",
-        );
-        data = await response.json();
-      }
-
       try {
+        // Always fetch from public folder - works in both dev and production
+        const response = await fetch("/data/job_stats.json");
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+
         let jobData = Object.keys(data).map((key) => {
           const job = data[key];
           return { name: key, ...job };
