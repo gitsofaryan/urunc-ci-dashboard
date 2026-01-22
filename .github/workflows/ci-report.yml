@@ -1,0 +1,43 @@
+name: CI Report
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Generate test report
+        run: npm run generate-report
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-report
+          path: path/to/test/report
+
+      - name: Notify on Slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.16.0
+        with:
+          payload: '{"text": "CI failed for commit ${{ github.sha }}"}'
+          channel: 'your-slack-channel-id'
+          slack-token: ${{ secrets.SLACK_TOKEN }}
