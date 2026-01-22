@@ -43,19 +43,14 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
-  // Filter based on required tag.
-  const filterRequired = (filteredJobs) => {
-    if (requiredFilter) {
-      filteredJobs = filteredJobs.filter((job) => job.required);
-    }
-    return filteredJobs;
-  };
-
   useEffect(() => {
     setLoading(true);
 
     // Filter based on required tag.
-    let filteredJobs = filterRequired(jobs);
+    let filteredJobs = jobs;
+    if (requiredFilter) {
+      filteredJobs = filteredJobs.filter((job) => job.required);
+    }
 
     // Set the rows for the table.
     setRows(
